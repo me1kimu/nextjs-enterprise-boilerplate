@@ -116,7 +116,7 @@
     "webpack": "5.94.0"
   },
   "resolutions": {
-    "axios": "^1.7.9"
+    "axios": "^1.7.2"
   },
   "engines": {
     "node": ">=20.0.0"
