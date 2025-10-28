@@ -115,6 +115,9 @@
     "typescript": "5.4.5",
     "webpack": "5.94.0"
   },
+  "resolutions": {
+    "axios": "^1.7.2"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
