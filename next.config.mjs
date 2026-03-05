@@ -12,7 +12,7 @@ const config = withPlugins([[withBundleAnalyzer({ enabled: env.ANALYZE })]], {
       fullUrl: true,
     },
   },
-  experimental: { instrumentationHook: true },
+  experimental: {},
   rewrites() {
     return [
       { source: "/healthz", destination: "/api/health" },
