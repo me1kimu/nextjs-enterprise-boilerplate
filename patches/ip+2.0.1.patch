@@ -1,0 +1,15 @@
+diff --git a/node_modules/ip/lib/ip.js b/node_modules/ip/lib/ip.js
+index 9022443..e7e801a 100644
+--- a/node_modules/ip/lib/ip.js
++++ b/node_modules/ip/lib/ip.js
+@@ -416,8 +416,8 @@ ip.address = function (name, family) {
+         return true;
+       }
+ 
+-      return name === 'public' ? ip.isPrivate(details.address)
+-        : ip.isPublic(details.address);
++      return name === 'public' ? ip.isPublic(details.address)
++        : ip.isPrivate(details.address);
+     });
+ 
+     return addresses.length ? addresses[0].address : undefined;
