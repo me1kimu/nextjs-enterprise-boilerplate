@@ -26,12 +26,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Resolve repository metadata
+        run: |
+          echo "ORG_NAME=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_ENV"
+          echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
+
       - name: Export Dependabot alerts
         uses: ShamKarthikS-Hexaware/dependabot-alert-export@v1.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          org_name: ${{ github.repository_owner }}
-          repo_name: ${{ github.event.repository.name }}
+          org_name: ${{ env.ORG_NAME }}
+          repo_name: ${{ env.REPO_NAME }}
           csv_path: ${{ env.OUTPUT_CSV }}
 
       - name: Upload CSV artifact
