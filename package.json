@@ -123,10 +123,8 @@
     "sha.js": "^2.4.12",
     "elliptic": "^6.6.1",
     "flatted": "3.4.2",
-    "glob": "10.5.0",
     "ip": "2.0.1",
     "lodash": "4.17.23",
-    "minimatch": "9.0.7",
     "serialize-javascript": "^6.0.1",
     "tar": "^6.1.11"
   },
