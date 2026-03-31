@@ -1,2 +1,54 @@
-- name: Dependabot Alert CSV Export
-  uses: ShamKarthikS-Hexaware/dependabot-alert-export@v1.0
+name: Dependabot Alerts Export
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every day at 03:15 UTC (adjust as needed)
+    - cron: "15 3 * * *"
+
+permissions:
+  contents: read
+  security-events: read
+
+concurrency:
+  group: dependabot-alerts-export
+  cancel-in-progress: false
+
+jobs:
+  export:
+    name: Export Dependabot alerts to CSV
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Export Dependabot alerts
+        uses: ShamKarthikS-Hexaware/dependabot-alert-export@v1.0
+        # If the action needs inputs/secrets, add them here, e.g.
+        # with:
+        #   github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependabot-alerts-csv
+          path: |
+            **/*dependabot*.csv
+            **/*Dependabot*.csv
+          if-no-files-found: warn
+          retention-days: 30
+
+      # OPTIONAL: commit the CSV back into the repo (disable if you prefer artifacts only)
+      # If you enable this, you must also change permissions.contents to "write".
+      # - name: Commit export to repository
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     mkdir -p reports
+      #     # Move/rename as needed once you know the real output filename:
+      #     # mv path/to/output.csv reports/dependabot-alerts.csv
+      #     git add -A
+      #     git commit -m "chore: update dependabot alerts export" || exit 0
+      #     git push
