@@ -19,25 +19,34 @@ jobs:
     name: Export Dependabot alerts to CSV
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      OUTPUT_CSV: reports/dependabot-alerts.csv
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Resolve repository metadata
+        run: |
+          echo "ORG_NAME=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_ENV"
+          echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
+
+      - name: Create output directory
+        run: mkdir -p "$(dirname "$OUTPUT_CSV")"
       - name: Export Dependabot alerts
         uses: ShamKarthikS-Hexaware/dependabot-alert-export@v1.0
-        # If the action needs inputs/secrets, add them here, e.g.
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          org_name: ${{ env.ORG_NAME }}
+          repo_name: ${{ env.REPO_NAME }}
+          csv_path: ${{ env.OUTPUT_CSV }}
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
         with:
           name: dependabot-alerts-csv
-          path: |
-            **/*dependabot*.csv
-            **/*Dependabot*.csv
-          if-no-files-found: warn
+          path: ${{ env.OUTPUT_CSV }}
+          if-no-files-found: error
           retention-days: 30
 
       # OPTIONAL: commit the CSV back into the repo (disable if you prefer artifacts only)
