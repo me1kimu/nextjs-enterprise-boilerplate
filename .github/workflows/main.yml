@@ -58,6 +58,7 @@ jobs:
               'manifest_path',
               'created_at',
               'fixed_at',
+              'dismissed_at',
               'html_url',
             ];
 
@@ -78,6 +79,7 @@ jobs:
                   alert.dependency?.manifest_path ?? '',
                   alert.created_at,
                   alert.fixed_at ?? '',
+                  alert.dismissed_at ?? '',
                   alert.html_url,
                 ]
                   .map(escapeCsv)
