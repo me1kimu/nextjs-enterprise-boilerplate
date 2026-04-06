@@ -63,7 +63,9 @@ jobs:
 
             const escapeCsv = (value) => {
               const text = value == null ? '' : String(value).replace(/\r?\n/g, ' ');
-              if (/[",]/.test(text)) {
+              const hasQuote = text.includes('"');
+              const hasComma = text.includes(',');
+              if (hasQuote || hasComma) {
                 return `"${text.replace(/"/g, '""')}"`;
               }
               return text;
