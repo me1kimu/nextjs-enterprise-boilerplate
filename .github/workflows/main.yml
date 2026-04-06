@@ -62,11 +62,12 @@ jobs:
             ];
 
             const escapeCsv = (value) => {
-              const text = value == null ? '' : String(value).replace(/\r?\n/g, ' ');
+              const text = value == null ? '' : String(value);
               const hasQuote = text.includes('"');
               const hasComma = text.includes(',');
               if (hasQuote || hasComma) {
-                return `"${text.replace(/"/g, '""')}"`;
+                const singleLineText = text.replace(/\r?\n/g, ' ');
+                return `"${singleLineText.replace(/"/g, '""')}"`;
               }
               return text;
             };
@@ -91,7 +92,7 @@ jobs:
               );
             }
 
-            fs.writeFileSync(path, `${lines.join('\n')}\n`, 'utf8');
+            fs.writeFileSync(path, lines.join('\n') + '\n', 'utf8');
             core.info(`Exported ${rows.length} Dependabot alerts to ${path}`);
 
       - name: Upload CSV artifact
