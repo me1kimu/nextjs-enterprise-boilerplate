@@ -40,7 +40,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs');
-            const path = process.env.OUTPUT_CSV;
+            const csvPath = process.env.OUTPUT_CSV;
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
             const rows = await github.paginate(github.rest.dependabot.listAlertsForRepo, {
               owner,
@@ -66,8 +66,7 @@ jobs:
               const hasQuote = text.includes('"');
               const hasComma = text.includes(',');
               if (hasQuote || hasComma) {
-                const singleLineText = text.replace(/\r?\n/g, ' ');
-                return `"${singleLineText.replace(/"/g, '""')}"`;
+                return `"${text.replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`;
               }
               return text;
             };
@@ -92,8 +91,8 @@ jobs:
               );
             }
 
-            fs.writeFileSync(path, lines.join('\n') + '\n', 'utf8');
-            core.info(`Exported ${rows.length} Dependabot alerts to ${path}`);
+            fs.writeFileSync(csvPath, lines.join('\n') + '\n', 'utf8');
+            core.info(`Exported ${rows.length} Dependabot alerts to ${csvPath}`);
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
