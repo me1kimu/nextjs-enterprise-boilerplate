@@ -33,13 +33,60 @@ jobs:
 
       - name: Create output directory
         run: mkdir -p "$(dirname "$OUTPUT_CSV")"
+
       - name: Export Dependabot alerts
-        uses: ShamKarthikS-Hexaware/dependabot-alert-export@v1.0
+        uses: actions/github-script@v7
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          org_name: ${{ env.ORG_NAME }}
-          repo_name: ${{ env.REPO_NAME }}
-          csv_path: ${{ env.OUTPUT_CSV }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('node:fs');
+            const path = process.env.OUTPUT_CSV;
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            const rows = await github.paginate(github.rest.dependabot.listAlertsForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const headers = [
+              'number',
+              'state',
+              'severity',
+              'package',
+              'ecosystem',
+              'manifest_path',
+              'created_at',
+              'fixed_at',
+              'html_url',
+            ];
+
+            const escapeCsv = (value) => {
+              const text = value == null ? '' : String(value);
+              return `"${text.replace(/"/g, '""')}"`;
+            };
+
+            const lines = [headers.join(',')];
+            for (const alert of rows) {
+              lines.push(
+                [
+                  alert.number,
+                  alert.state,
+                  alert.security_vulnerability?.severity ?? '',
+                  alert.dependency?.package?.name ?? '',
+                  alert.dependency?.package?.ecosystem ?? '',
+                  alert.dependency?.manifest_path ?? '',
+                  alert.created_at,
+                  alert.fixed_at ?? '',
+                  alert.html_url,
+                ]
+                  .map(escapeCsv)
+                  .join(',')
+              );
+            }
+
+            fs.writeFileSync(path, `${lines.join('\n')}\n`, 'utf8');
+            core.info(`Exported ${rows.length} Dependabot alerts to ${path}`);
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
