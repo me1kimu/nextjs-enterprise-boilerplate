@@ -63,13 +63,14 @@ jobs:
 
             const escapeCsv = (value) => {
               const text = value == null ? '' : String(value);
-              const hasQuote = text.includes('"');
-              const hasComma = text.includes(',');
-              const hasNewline = /\r?\n/.test(text);
+              const neutralizedText = /^[=+\-@]/.test(text) ? `'${text}` : text;
+              const hasQuote = neutralizedText.includes('"');
+              const hasComma = neutralizedText.includes(',');
+              const hasNewline = /\r?\n/.test(neutralizedText);
               if (hasQuote || hasComma || hasNewline) {
-                return `"${text.replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`;
+                return `"${neutralizedText.replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`;
               }
-              return text;
+              return neutralizedText;
             };
 
             const lines = [headers.join(',')];
