@@ -45,6 +45,7 @@ jobs:
             const rows = await github.paginate(github.rest.dependabot.listAlertsForRepo, {
               owner,
               repo,
+              state: 'all',
               per_page: 100,
             });
 
