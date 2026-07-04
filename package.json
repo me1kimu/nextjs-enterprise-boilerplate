@@ -148,7 +148,7 @@
     "**/express/path-to-regexp": "^0.1.13"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.6.0"
   },
   "packageManager": "yarn@1.22.19"
 }
